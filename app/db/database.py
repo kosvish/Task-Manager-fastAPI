@@ -1,6 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, BOOLEAN, ForeignKey
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
+from app.api.models.user import UserModel
+
 
 DATABASE_URL = "postgresql://postgres:5525@localhost/postgres"
 
@@ -27,6 +29,11 @@ class Task(Base):
     completed = Column(BOOLEAN, nullable=False)
     user_id = Column(Integer, ForeignKey("Users.id"))
     user = relationship("User", back_populates="tasks")
+
+
+class CheckUserInDatabase:
+    def get_user_by_name(self, db: Session, username: str):
+        return db.query(UserModel).filter(UserModel.username == username if username is not None else "").first()
 
 
 Base.metadata.create_all(bind=engine)
