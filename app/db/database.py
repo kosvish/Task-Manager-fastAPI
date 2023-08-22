@@ -17,6 +17,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, nullable=False)
+    tasks = relationship("Task", back_populates="user")
+    password = Column(String, nullable=False)
 
 
 class Task(Base):
@@ -38,9 +40,4 @@ Base.metadata.create_all(bind=engine)
 
 
 def get_db() -> Session:
-    db = SessionLocal
-    try:
-        yield db
-
-    finally:
-        db.close()
+    return SessionLocal()

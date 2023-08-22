@@ -1,8 +1,11 @@
+from typing import List
+
 from pydantic import BaseModel, constr, EmailStr
 import jwt
 from app.core.security import SECRET_KEY, ALGORITHM
 from app.db.database import CheckUserInDatabase, SessionLocal
 from fastapi import HTTPException, status
+from .task import Task
 
 check_user = CheckUserInDatabase()
 
@@ -10,6 +13,7 @@ check_user = CheckUserInDatabase()
 class UserModel(BaseModel):
     username: constr(min_length=3, max_length=12)
     email: EmailStr
+    tasks: List[Task]
 
     def verify_token(self, token):
         if not token:
@@ -37,6 +41,12 @@ class UserCreateModel(BaseModel):
     username: constr(min_length=3, max_length=12)
     password: constr(min_length=6)
     email: EmailStr
+
+
+class UserResponseModel(BaseModel):
+    id: int
+    username: str
+    email: str
 
 
 
