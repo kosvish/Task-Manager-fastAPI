@@ -9,7 +9,6 @@ check_user = CheckUserInDatabase()
 
 class UserModel(BaseModel):
     username: constr(min_length=3, max_length=12)
-    password: int
     email: EmailStr
 
     def verify_token(self, token):
@@ -34,6 +33,10 @@ class UserModel(BaseModel):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="токен не действителен")
 
 
+class UserCreateModel(BaseModel):
+    username: constr(min_length=3, max_length=12)
+    password: constr(min_length=6)
+    email: EmailStr
 
 
 
