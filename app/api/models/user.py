@@ -1,13 +1,4 @@
-from typing import List, Union
 from pydantic import BaseModel, constr, EmailStr
-from app.db.database import CheckUserInDatabase, SessionLocal, User
-from .task import Task
-
-
-class UserModel(BaseModel):
-    username: constr(min_length=3, max_length=12)
-    email: EmailStr
-    tasks: List[Task]
 
 
 class UserCreateModel(BaseModel):
