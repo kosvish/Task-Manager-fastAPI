@@ -14,3 +14,7 @@ class TaskResponseModel(BaseModel):
     title: str
     description: str
     completed: bool = None
+
+
+class TaskUpdateModel(BaseModel):
+    completed: bool
