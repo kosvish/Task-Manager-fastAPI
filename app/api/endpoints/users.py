@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Request
+from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from app.api.models.user import UserCreateModel
 from app.db.database import get_db, User
@@ -6,7 +6,7 @@ from app.api.models.user import TokenData, UserResponseModel
 import jwt
 from app.core.security import SECRET_KEY, ALGORITHM
 import datetime
-from fastapi.security import OAuth2PasswordBearer
+
 
 register_router = APIRouter()
 login_router = APIRouter()
@@ -56,7 +56,7 @@ async def register_user(user_data: UserCreateModel, db: Session = Depends(get_db
     db.commit()
     db.refresh(new_user)
 
-    return {"id": new_user.id,
+    return {
             "username": new_user.username,
             "email": new_user.email,
             "password": new_user.password,
