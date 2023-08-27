@@ -10,9 +10,6 @@ class UserCreateModel(BaseModel):
 class UserResponseModel(BaseModel):
     id: int
     username: str
-    email: str
-    password: str
-    token: str
 
 
 class UserLoginModel(BaseModel):
@@ -22,4 +19,4 @@ class UserLoginModel(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
-    password: str | None = None
+    user_id: int | None
