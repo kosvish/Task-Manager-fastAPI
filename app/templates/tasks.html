@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список задач</title>
+</head>
+<body>
+    <h1>Список задач</h1>
+
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <h2>{{ task.title }}</h2>
+                <p>{{ task.description }}</p>
+                <p>Статус: {% if task.completed %}Выполнено{% else %}В процессе{% endif %}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
