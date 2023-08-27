@@ -2,12 +2,20 @@ from app.api.models.task import TaskCreateModel, TaskResponseModel, TaskUpdateMo
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.database import get_db, Task, User
 from sqlalchemy.orm import Session
+from fastapi.templating import Jinja2Templates
+from app.api.endpoints.users import get_current_user
+from app.api.models.user import UserResponseModel
+from fastapi.responses import HTMLResponse
+from pathlib import Path
+
+templates_directory = Path(__file__).parent.parent.parent / "templates"
+
 
 add_task_router = APIRouter()
 get_task_router = APIRouter()
 delete_task_router = APIRouter()
 put_task_router = APIRouter()
-
+html_router = APIRouter()
 
 def check_user(username: str, db: Session = Depends(get_db)):
     check_username = db.query(User).filter(User.username == username).first()
@@ -86,3 +94,10 @@ async def put_task(username: str, task_id: int, completed: bool, db: Session = D
     return TaskResponseModel(id=task.id, title=task.title, description=task.description, user_id=task.user_id,
                              completed=task.completed)
 
+
+@html_router.get("/tasks", response_class=HTMLResponse)
+async def get_html_template(request: Request, db: Session = Depends(get_db),
+                            current_user: UserResponseModel = Depends(get_current_user)):
+    tasks = db.query(Task).filter(Task.user_id == current_user[0]).all()
+
+    return templates.TemplateResponse("tasks.html", {"request": request, "tasks": tasks})
