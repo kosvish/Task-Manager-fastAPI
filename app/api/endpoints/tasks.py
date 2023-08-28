@@ -15,7 +15,8 @@ add_task_router = APIRouter()
 get_task_router = APIRouter()
 delete_task_router = APIRouter()
 put_task_router = APIRouter()
-html_router = APIRouter()
+html_router_personal_task = APIRouter()
+dashboard_router = APIRouter()
 
 templates = Jinja2Templates(directory=templates_directory)
 
@@ -101,9 +102,17 @@ async def put_task(task_id: int, completed: bool,
                              completed=task.completed)
 
 
-@html_router.get("/tasks", response_class=HTMLResponse)
+@html_router_personal_task.get("/tasks", response_class=HTMLResponse)
 async def get_html_template(request: Request, db: Session = Depends(get_db),
                             current_user: UserResponseModel = Depends(get_current_user)):
     tasks = db.query(Task).filter(Task.user_id == current_user[0]).all()
 
     return templates.TemplateResponse("tasks.html", {"request": request, "tasks": tasks})
+
+
+@dashboard_router.get("/dashboard", response_class=HTMLResponse)
+async def get_html_template(request: Request, db: Session = Depends(get_db),
+                            current_user: UserResponseModel = Depends(get_current_user)):
+    tasks = db.query(Task).all()
+
+    return templates.TemplateResponse("dashboard.html", {"request": request, "tasks": tasks})
