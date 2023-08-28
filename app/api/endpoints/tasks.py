@@ -7,9 +7,9 @@ from app.api.endpoints.users import get_current_user
 from app.api.models.user import UserResponseModel
 from fastapi.responses import HTMLResponse
 from pathlib import Path
+from app.api.websocket.ws import send_notification
 
 templates_directory = Path(__file__).parent.parent.parent / "templates"
-
 
 add_task_router = APIRouter()
 get_task_router = APIRouter()
@@ -35,6 +35,9 @@ async def add_task(task: TaskCreateModel, db: Session = Depends(get_db),
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
+
+    await send_notification("Задача создана: {}".format(new_task.title))
+
     return new_task
 
 
@@ -54,7 +57,6 @@ async def get_task(db: Session = Depends(get_db), current_user: UserResponseMode
 @delete_task_router.delete("/delete_task/{task_id}")
 async def delete_task(task_id: int, db: Session = Depends(get_db),
                       current_user: UserResponseModel = Depends(get_current_user)):
-
     check_user_db = db.query(User).filter(User.username == current_user[1]).first()
     if not check_user_db:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
@@ -70,13 +72,15 @@ async def delete_task(task_id: int, db: Session = Depends(get_db),
 
     db.delete(task)
     db.commit()
+
+    await send_notification("Задача удалена: {}".format(task.title))
+
     return HTTPException(status_code=status.HTTP_202_ACCEPTED, detail="Задача успешно удалена")
 
 
 @put_task_router.put("/update_task/{task_id}", response_model=TaskResponseModel)
 async def put_task(task_id: int, completed: bool,
                    db: Session = Depends(get_db), current_user: UserResponseModel = Depends(get_current_user)):
-
     check_user_db = db.query(User).filter(User.username == current_user[1]).first()
 
     if not check_user_db:
@@ -97,6 +101,8 @@ async def put_task(task_id: int, completed: bool,
     task.completed = completed
 
     db.commit()
+
+    await send_notification("Статус задачи обновлен: {}".format(task.title))
 
     return TaskResponseModel(id=task.id, title=task.title, description=task.description, user_id=task.user_id,
                              completed=task.completed)
